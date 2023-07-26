@@ -392,6 +392,22 @@ export const selectComponents = [
     regList: [],
     changeTag: true,
     document: 'https://element.eleme.cn/#/zh-CN/component/upload'
+  },
+  {
+    label: '图片视频',
+    tag: 'el-image',
+    tagIcon: 'el-icon-picture',
+    src:"https://img1.baidu.com/it/u=3007048469,3759326707&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1690304400&t=88619c32ee30fa00181f6ddf759cd47a",
+    lazy: true,
+    defaultValue: null,
+    labelWidth: null,
+    disabled: false,
+    required: true,
+    fit:'contain',
+    multiple: false,
+    regList: [],
+    changeTag: true,
+    document: 'https://element.eleme.cn/#/zh-CN/component/image'
   }
 ]
 

@@ -90,21 +90,18 @@
       <el-table-column label="视频ID" align="center" prop="oneId" />
       <el-table-column label="视频名称" align="center" prop="vidName" />
       <el-table-column label="视频" align="center" prop="vidUrl" >
-      <template slot-scope="scope">
-        <el-image :src="scope.row.vidUrl "></el-image>
-<!--        <div>{{// scope.row.vidUrl}}</div>-->
+      <template slot-scope="scope" >
+        <video :src="scope.row.vidUrl " height="150px" width="100px" controls></video>
       </template>
       </el-table-column>
 <!--      服务器存储的地址发过来  和这个字段拼接一下   用img video  标签展示-->
-      <el-table-column label="等级" align="center" prop="level" />
-      <el-table-column label="状态" align="center" prop="statue" />
-<!--      <el-table-column label="页面展示位置" align="center" prop="location" />-->
-<!--      <el-table-column label="状态" width="120">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-tag type="success" effect="dark" v-if="scope.form.statue==1">可用</el-tag>-->
-<!--          <el-tag type="warning" effect="dark" v-if="scope.form.statue==2">不可用</el-tag>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <el-table-column label="页面位置" align="center" prop="level" />
+      <el-table-column label="项目位置" align="center" prop="location" />
+      <el-table-column label="状态" align="center" prop="statue" >
+        <template v-slot="scope">
+          {{scope.row.statue == 1 ?'可用':'不可用'}}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -157,19 +154,27 @@
            </div>
            </el-upload>
            </el-form-item>
-        <el-form-item label="等级" prop="level">
-          <el-input v-model="form.level" placeholder="请输入等级" />
+        <el-form-item label="页面位置" prop="level">
+          <el-input v-model="form.level" placeholder="请输入页面位置" />
         </el-form-item>
-<!--        <el-form-item label="页面展示位置" prop="location">-->
-<!--          <el-input v-model="form.location" placeholder="请输入页面展示位置" />-->
+        <el-form-item label="项目位置" prop="location">
+          <el-input v-model="form.location" placeholder="请输入页面展示位置" />
+        </el-form-item>
+<!--        <el-form-item label="状态" prop="level">-->
+<!--          <el-input v-model="form.statue" placeholder="请输入状态(1可用2不可用)" />-->
 <!--        </el-form-item>-->
-        <el-form-item label="状态" prop="level">
-          <el-input v-model="form.statue" placeholder="请输入状态" />
-        </el-form-item>
 <!--        <el-form-item label="状态" prop="statue">-->
 <!--          <el-radio v-model="form.status" label="1">可用</el-radio>-->
 <!--          <el-radio v-model="form.status" label="2">不可用</el-radio>-->
 <!--        </el-form-item>-->
+        <el-form-item label="状态">
+          <el-switch
+            @change="switchChange"
+            v-model="value1"
+            active-text="可用"
+            inactive-text="不可用">
+          </el-switch>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -194,6 +199,7 @@ export default {
       fileList: [],
       // 非单个禁用
       single: true,
+      value1:true,
       // 非多个禁用
       multiple: true,
       // 显示搜索条件
@@ -229,6 +235,14 @@ export default {
     this.getList();
   },
   methods: {
+    // 开关状态改变
+    switchChange(e) {
+      if (e) {
+        this.form.statue =1
+      } else {
+        this.form.statue =2
+      }
+    },
     /** 查询视频管理列表 */
     getList() {
       this.loading = true;
@@ -301,6 +315,9 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加视频管理";
+      this.form.statue = 1
+      this.fileList = []
+      // okle  试试看把
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -309,6 +326,11 @@ export default {
       getVideo(oneId).then(response => {
         this.form = response.data;
         this.open = true;
+        if (this.form.statue == 1) {
+          this.value1 = true
+        } else {
+          this.value1 = false
+        }
         this.title = "修改视频管理";
       });
     },

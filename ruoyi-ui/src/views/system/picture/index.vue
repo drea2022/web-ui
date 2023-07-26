@@ -9,14 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="图片地址" prop="picUrl">
-        <el-input
-          v-model="queryParams.picUrl"
-          placeholder="请输入图片地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="等级" prop="picLevel">
         <el-input
           v-model="queryParams.picLevel"
@@ -28,14 +20,6 @@
       <el-form-item label="状态" prop="statue">
         <el-input v-model="queryParams.statue" placeholder="请输入状态" />
       </el-form-item>
-<!--      <el-form-item label="页面展示位置" prop="location">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.location"-->
-<!--          placeholder="请输入页面展示位置"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
 
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -94,19 +78,17 @@
       <el-table-column label="图片ID" align="center" prop="picId" />
       <el-table-column label="图片名称" align="center" prop="picName" />
       <el-table-column label="图片" align="center" prop="picUrl" >
-          <template slot-scope="scope">
-            <el-image :src=" scope.row.picUrl "></el-image>
+          <template slot-scope="scope" >
+            <el-image :src=" scope.row.picUrl " ></el-image>
           </template>
       </el-table-column>
-      <el-table-column label="等级" align="center" prop="picLevel" />
-<!--      <el-table-column label="页面展示位置" align="center" prop="location" />-->
-<!--      <el-table-column label="状态" width="120">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-tag type="success" effect="dark" v-if="scope.queryParams.statue==1">可用</el-tag>-->
-<!--          <el-tag type="warning" effect="dark" v-if="scope.queryParams.statue==2">不可用</el-tag>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-      <el-table-column label="状态" align="center" prop="statue" />
+      <el-table-column label="页面位置" align="center" prop="picLevel" />
+      <el-table-column label="项目位置" align="center" prop="location" />
+      <el-table-column label="状态" align="center" prop="statue" >
+        <template v-slot="scope">
+          {{scope.row.statue == 1 ?'可用':'不可用'}}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -141,7 +123,7 @@
         <el-form-item label="图片名称" prop="picName">
           <el-input v-model="form.picName" placeholder="请输入图片名称" />
         </el-form-item>
-        <el-form-item label="图片" prop="fileUrl">
+        <el-form-item label="图片" prop="fileUrl" >
           <el-upload class="upload-demo" action="http://120.48.50.16:8080/common/upload"
                      :on-preview="handlePreview"
                      :on-remove="handleRemove"
@@ -154,24 +136,25 @@
                      :file-list="fileList"
           >
             <i class="el-icon-upload"></i>
-            <div class="el-upload__text">
+            <div class="el-upload__text" >
               将文件拖到此处，或<em>点击上传</em>
             </div>
           </el-upload>
         </el-form-item>
-        <el-form-item label="等级" prop="picLevel">
+        <el-form-item label="页面位置" prop="picLevel">
           <el-input v-model="form.picLevel" placeholder="请输入等级" />
         </el-form-item>
-<!--        <el-form-item label="页面展示位置" prop="location">-->
-<!--          <el-input v-model="form.location" placeholder="请输入页面展示位置" />-->
-<!--        </el-form-item>-->
-        <el-form-item label="状态" prop="statue">
-          <el-input v-model="form.statue" placeholder="请输入状态" />
+        <el-form-item label="状态">
+          <el-switch
+            @change="switchChange"
+            v-model="value1"
+            active-text="可用"
+            inactive-text="不可用">
+          </el-switch>
         </el-form-item>
-<!--        <el-form-item label="状态" prop="statue">-->
-<!--          <el-radio v-model="queryParams.status" label="1">可用</el-radio>-->
-<!--          <el-radio v-model="queryParams.status" label="2">不可用</el-radio>-->
-<!--        </el-form-item>-->
+        <el-form-item label="项目位置" prop="location">
+          <el-input v-model="form.location" placeholder="请输入等级" />
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -196,12 +179,14 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      value1:true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
       total: 0,
       // 图片管理表格数据
       pictureList: [],
+      fileList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -229,6 +214,14 @@ export default {
     this.getList();
   },
   methods: {
+    // 开关状态改变
+    switchChange(e) {
+      if (e) {
+        this.form.statue =1
+      } else {
+        this.form.statue =2
+      }
+    },
     /** 查询图片管理列表 */
     getList() {
       this.loading = true;
@@ -276,7 +269,10 @@ export default {
         createBy: null,
         createTime: null,
         updateBy: null,
-        updateTime: null
+        updateTime: null,
+        fileUrl:null,
+        fileName:null,
+        url:null
       };
       this.resetForm("form");
     },
@@ -301,6 +297,8 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加图片管理";
+      this.form.statue = 1
+      this.fileList = []
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -310,6 +308,11 @@ export default {
         this.form = response.data;
         this.open = true;
         this.title = "修改图片管理";
+        if (this.form.statue == 1) {
+          this.value1 = true
+        } else {
+          this.value1 = false
+        }
       });
     },
     /** 提交按钮 */

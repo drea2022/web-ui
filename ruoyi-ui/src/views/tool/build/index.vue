@@ -78,6 +78,7 @@
 
     <div class="center-board">
       <div class="action-bar">
+        <el-button icon="el-icon-view" type="text"  >预览展示</el-button>
         <el-button icon="el-icon-download" type="text" @click="download">
           导出vue文件
         </el-button>

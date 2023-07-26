@@ -9,14 +9,6 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="导航栏地址" prop="href">
-        <el-input
-          v-model="queryParams.href"
-          placeholder="请输入导航栏地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="项目页面位置" prop="level">
         <el-input
           v-model="queryParams.level"
@@ -25,14 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-<!--      <el-form-item label="页面展示位置" prop="location">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.location"-->
-<!--          placeholder="请输入页面展示位置"-->
-<!--          clearable-->
-<!--          @keyup.enter.native="handleQuery"-->
-<!--        />-->
-<!--      </el-form-item>-->
+
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
